@@ -1,26 +1,54 @@
-import torch
-import torch.utils.data as data
+import os
 
+from PIL import Image
+from torch.utils.data import DataLoader
+import torchvision
+from torchvision.datasets import CIFAR10
+import torchvision.transforms as transforms
 
-BASE_DATA_URL = 'data/'
-BASE_DATA_EXTENSION = '.pt'
+# reference: https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 
+BASE_DATA_URL = './data/'
+CIFAR10_DATA_URL = './data/cifar10/'
+CIFAR10_CLASSES = ('plane', 'car', 'bird', 'cat', 'deer', 
+                    'dog', 'frog', 'horse', 'ship', 'truck')
 
-class CustomDataset(data.Dataset):
-    """Custom map-style dataset class"""
-    def __init__(self, list_IDs, labels):
-        self.list_IDs = list_IDs
-        self.labels = labels
+# CIFAR-10 dataloader
+def fetch_cifar10_dataloader(batch_size=4, number_of_workers=1):
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     
-    def __len__(self):
-        """Denotes the total number of samples"""
-        return len(self.list_IDs)
+    train_dataset = CIFAR10(root=CIFAR10_DATA_URL, train=True,
+                            download=True, transform=transform)
+    test_dataset = CIFAR10(root=CIFAR10_DATA_URL, train=False,
+                            download=True, transform=transform)
 
-    def __getitem__(self, index):
-        """Generates one sample of data"""
-        sample_ID = self.list_IDs[index]
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size,
+                                    shuffle=True, num_workers=number_of_workers)
+    test_dataloader = DataLoader(test_dataset, batch_size=4,
+                                    shuffle=False, num_workers=number_of_workers)
 
-        X = torch.load(BASE_DATA_URL + sample_ID + BASE_DATA_EXTENSION)
-        Y = self.labels[sample_ID]
+    return train_dataloader, test_dataloader
 
-        return X, Y
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    # functions to show an image
+    def imshow(img):
+        img = img / 2 + 0.5     # unnormalize
+        npimg = img.numpy()
+        plt.imshow(np.transpose(npimg, (1, 2, 0)))
+        plt.show()
+
+    train_dataloader, _ = fetch_cifar10_dataloader()
+    # get some random training images
+    dataiter = iter(train_dataloader)
+    images, labels = dataiter.next()
+
+    # show images
+    imshow(torchvision.utils.make_grid(images))
+    # print labels
+    print(' '.join('%5s' % CIFAR10_CLASSES[labels[j]] for j in range(4)))
