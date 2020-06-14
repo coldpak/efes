@@ -15,13 +15,17 @@ Use the package manager [conda](https://docs.conda.io/projects/conda/en/latest/u
 
 ```bash
 # Clone this github repository
-git clone https://~~~
-cd ~~~
+git clone https://github.com/coldpak/efes.git
+cd efes
+
+# Set Python environment using conda
 conda env create -f environment.yml
 conda activate efes
 ```
 
 ## Guidelines
+
+아래의 가이드라인을 따라가면서 root directory에 `env` 파일을 만들고 python 클래스 및 함수들을 정의하자.
 
 > Part 1 : Prepare Data
 
@@ -32,11 +36,13 @@ is highly dependent on **the form of the data** or **the purpose of the research
 
 - [ ] 사용할 데이터셋을 정해라
 
-- [ ] `Dataset`, `DataLoader`를 정의
+- [ ] data location 정해라 -> uri 정보를 env에 입력
+
+- [ ] data_loader.py에 `Dataset`, `DataLoader`을 응용해 커스텀 클래스들을 정의하라
 
 > Part 2 : Construct Models
 
-- [ ] 사용할 model 클래스 정의
+- [ ] model/ 내부에 사용할 model 클래스 정의
 
 - [ ] loss, optimizer 정의
 
@@ -46,7 +52,9 @@ is highly dependent on **the form of the data** or **the purpose of the research
 
 > Part 3 : Run Experiments
 
-- [ ] 
+- [ ] MLflow 서버 열기, 아이디 비번 만들어서 env에 입력
+
+- [ ] 실험 아이디, metric 등을 env에 입력
 
 
 
